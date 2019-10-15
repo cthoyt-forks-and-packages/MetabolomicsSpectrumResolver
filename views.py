@@ -279,6 +279,40 @@ def generateMirrorPNG():
     return send_file(output_filename,mimetype='image/png')
 
 
+def generate_alignment_figure(usi1, usi2, extension, **kwargs):
+    from alignment import sqrt_normalise
+    from alignment import fast_cosine_shift
+    from alignment import plot_spectral_alignment
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    spec1 = parse_USI(usi1)
+    spec2 = parse_USI(usi2)
+
+    spec1['normalised_peaks'] = sqrt_normalise(spec1['peaks'])
+    spec2['normalised_peaks'] = sqrt_normalise(spec2['peaks'])
+
+    spec1['n_peaks'] = len(spec1['peaks'])
+    spec2['n_peaks'] = len(spec2['peaks'])
+
+    output_filename = os.path.join(app.config['TEMPFOLDER'],
+                                   f'{uuid.uuid4()}.{extension}')
+    plot_spectral_alignment(spec1,
+                            spec2,
+                            fast_cosine_shift,
+                            0.2,
+                            output_filename)
+
+    return output_filename
+
+@app.route("/png/alignment/")
+def generateAlignmentPNG():
+    usi1 = request.args.get('usi1')
+    usi2 = request.args.get('usi2')
+    plot_pars = get_plot_pars(request)
+    output_filename = generate_alignment_figure(usi1, usi2, 'png', **plot_pars)
+    return send_file(output_filename,mimetype='image/png')
+
 def get_plot_pars(request):
     try:
         xmin = float(request.args.get('xmin',None))

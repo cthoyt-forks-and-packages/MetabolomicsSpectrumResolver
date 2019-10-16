@@ -215,6 +215,7 @@ def _prepare_spectrum(usi, **kwargs):
         annotate_mz = generate_labels(spec, kwargs.get('thresh', 0.05))
         for mz in annotate_mz:
             spec.annotate_mz_fragment(mz, 0, 0.01, 'Da', text=f'{mz:.4f}')
+        
             
     return spec
 

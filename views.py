@@ -74,9 +74,9 @@ def parse_ms2lda(usi):
         document_id,
     )
     response = requests.get(request_url)
-    peak_list = [(m,i) for m,i in json.loads(response.text)]
-    peak_list.sort(key = lambda x: x[0])
-    spectrum = {'peaks':peak_list}
+    spec_dict = json.loads(response.text)
+    spec_dict['peaks'].sort(key = lambda x: x[0])
+    spectrum = spec_dict
     return spectrum
 
 #parsing motifdb from ms2lda.org
